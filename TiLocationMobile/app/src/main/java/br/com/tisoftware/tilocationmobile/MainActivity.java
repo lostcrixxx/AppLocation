@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView t;
     private LocationManager locationManager;
     private LocationListener listener;
-    private String coordenadas;
+    private String latitude, longitude;
 
     // Banco de dados
     Button register;
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         t = (TextView) findViewById(R.id.textView);
-        coordenadas = t.getText().toString();
 
         // Teste para inserir no banco
         register = (Button) findViewById(R.id.register);
@@ -60,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 t.append("\n " + location.getLongitude() + " " + location.getLatitude());
+                latitude = String.valueOf(location.getLatitude());
+                longitude = String.valueOf(location.getLongitude());
                 Log.i("localizacao","Enviado");
                 registrar();
                 Log.i("localizacao","Cadastrando");
@@ -91,56 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 registrar();
             }
         });
-
-        /*
-        // Registrar os dados no banco de dados
-        requestQueue = Volley.newRequestQueue(getApplicationContext());
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //if(email.toString().equals(emailN.toString())) {
-                StringRequest request = new StringRequest(Request.Method.POST, insertUrl, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        System.out.println(response.toString());
-                        Log.i("localizacao", "cadastrando" + response.toString());
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }) {
-
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("nome", "teste1");
-                        parameters.put("licenca", "teste2");
-
-                        //parameters.put("nome", nome.getText().toString());
-                        //parameters.put("email", email.getText().toString());
-
-                        return parameters;
-                    }
-                };
-                requestQueue.add(request);
-
-
-                //} else{
-                //Toast.makeText(getApplicationContext(), "Por favor, verifique o email", Toast.LENGTH_SHORT).show();
-
-                //}
-
-
-            }
-
-        });
-
-        */
 
     }
 
@@ -190,9 +141,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<String, String>();
-                params.put("name", coordenadas);
+                params.put("latitude", latitude);
                 //params.put("imei", "teste2");
-                params.put("licenca", "teste3");
+                params.put("longitude", longitude);
                 Log.i("localizacao","Sucesso");
                 return params;
             }
