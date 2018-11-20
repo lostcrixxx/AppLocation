@@ -37,20 +37,12 @@ public class MainActivity extends AppCompatActivity {
     private LocationListener listener;
     private String latitude, longitude;
 
-    // Banco de dados
-    Button register;
-    RequestQueue requestQueue;
-    String insertUrl = "http://tisoftware.atspace.cc/insert.php";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         t = (TextView) findViewById(R.id.textView);
-
-        // Teste para inserir no banco
-        register = (Button) findViewById(R.id.register);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -59,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 t.append("\n " + location.getLongitude() + " " + location.getLatitude());
-                latitude = String.valueOf(location.getLatitude());
                 longitude = String.valueOf(location.getLongitude());
-                Log.i("localizacao","Enviado");
-                registrar();
-                Log.i("localizacao","Cadastrando");
+                latitude = String.valueOf(location.getLatitude());
+                Log.i("localizacao","Exibindo na tela");
+                registrar(); // Enviar os dados para o banco
+                Log.i("localizacao","Chamou para registrar no banco");
             }
 
             @Override
@@ -84,14 +76,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        // Verifica se o GPS está ativado
         verificaGPS();
-
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registrar();
-            }
-        });
 
     }
 
@@ -116,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        locationManager.requestLocationUpdates("gps", 15000, 0, listener);
+        // 60000 = 1 minuto, 300000 = 5 minutos, 600000 = 10 minutos
+        locationManager.requestLocationUpdates("gps", 150000, 0, listener);
     }
 
 
@@ -128,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         loading.dismiss();
-                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "cadastrado com sucesso", Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
@@ -141,9 +128,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<String, String>();
-                params.put("latitude", latitude);
-                //params.put("imei", "teste2");
                 params.put("longitude", longitude);
+                params.put("latitude", latitude);
                 Log.i("localizacao","Sucesso");
                 return params;
             }
