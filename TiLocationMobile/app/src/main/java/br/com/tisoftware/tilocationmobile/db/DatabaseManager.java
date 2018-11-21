@@ -1,4 +1,4 @@
-package br.com.tisoftware.tilocationmobile;
+package br.com.tisoftware.tilocationmobile.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.tisoftware.tilocationmobile.CallDetails;
 
 
 // Will be performing all actions on database.

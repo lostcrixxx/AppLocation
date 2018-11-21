@@ -1,10 +1,18 @@
 package br.com.tisoftware.tilocationmobile;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,18 +20,47 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import br.com.tisoftware.tilocationmobile.db.DatabaseHandler;
+import br.com.tisoftware.tilocationmobile.db.DatabaseManager;
 
 public class MainActivity extends AppCompatActivity {
+
+    // Coordenadas
+    private TextView t;
+    private LocationManager locationManager;
+    private LocationListener listener;
+    private String data_Cadastro, latitude, longitude;
+
+    // TODO salvar IMEI em SharedPreferences
+    // IMEI
+    private String IMEINumber = "";
+    final int reqcode = 1;
 
     DatabaseHandler db=new DatabaseHandler(this);
     final static String TAG = "localizacao";
@@ -36,6 +73,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // coordenadas
+        //t = (TextView) findViewById(R.id.textView);
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                //t.append("\n " + location.getLongitude() + " " + location.getLatitude());
+                longitude = String.valueOf(location.getLongitude());
+                latitude = String.valueOf(location.getLatitude());
+                Log.i("localizacao", "Exibindo na tela");
+                imei();
+                registrar(); // Enviar os dados para o banco
+                Log.i("localizacao", "Chamou para registrar no banco");
+                olhaData();
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(i);
+            }
+        };
+
+        // Verifica se o GPS está ativado
+        verificaGPS();
+
+        // TODO Verificar, porque não está pegando o IMEI antes das permissões
+        // Chama método para pegar IMEI
+        //imei();
+
 
         /*StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());*/
@@ -137,10 +218,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkPermission()
     {
         int i=0;
-        String[] perm={Manifest.permission.READ_PHONE_STATE,Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_CONTACTS};
+        String[] perm={Manifest.permission.READ_PHONE_STATE, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS,Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
         List<String> reqPerm=new ArrayList<>();
 
         for(String permis:perm) {
@@ -152,12 +230,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if(i==5)
+        // TODO Verificar a quantidade de permissoes
+        if(i==8) {
+
             return true;
+        }
         else
             return requestPermission(reqPerm);
-    }
 
+    }
 
 
     private boolean requestPermission(List<String> perm)
@@ -184,15 +265,140 @@ public class MainActivity extends AppCompatActivity {
         switch(requestCode)
         {
             case 1:
-                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
-                    Log.i("ligacao", "Tem permissão de acesso nas chamadas");
+                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+
+
+                    Log.i(TAG, "Tem permissão de acesso nas chamadas");
                     //Toast.makeText(getApplicationContext(),"Permission Granted to access Phone calls",Toast.LENGTH_LONG);
+                }
                 else
-                Log.i("ligacao", "Não pode acessar as chamadas");
+                Log.i(TAG, "Não pode acessar as chamadas");
                     //Toast.makeText(getApplicationContext(),"You can't access Phone calls",Toast.LENGTH_LONG);
+                break;
+            case 10:
+                imei();
+                verificaGPS();
+                break;
+            default:
                 break;
         }
 
     }
+
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 10:
+                verificaGPS();
+                break;
+            default:
+                break;
+
+        }
+
+    }
+    */
+
+
+    void verificaGPS() {
+        // first check for permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}
+                        , 10);
+            }
+            return;
+        }
+
+        // 60000 = 1 minuto, 300000 = 5 minutos, 600000 = 10 minutos
+        locationManager.requestLocationUpdates("gps", 60000, 0, listener);
+    }
+
+    // Pegar IMEI do aparelho
+    void imei() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            String[] per = {Manifest.permission.READ_PHONE_STATE};
+            requestPermissions(per, reqcode);
+
+            TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    IMEINumber = tm.getImei();
+                    //textView.setText(IMEINumber);
+                    Log.i("localizacao","IMEI: " + IMEINumber);
+                }
+            } else {
+                IMEINumber = tm.getDeviceId();
+                //.setText(IMEINumber);
+                Log.i("localizacao","IMEI else: " + IMEINumber);
+            }
+
+        }
+    }
+
+    String olhaData() {
+        // Data e Hora
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+        // Hora
+        // SimpleDateFormat dateFormat_hora = new SimpleDateFormat("HH:mm:ss");
+        // String hora_atual = dateFormat_hora.format(data_atual);
+
+        Date data = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(data);
+        Date data_atual = cal.getTime();
+
+        data_Cadastro = dateFormat.format(data_atual);
+
+        Log.i("localizacao", "data_atual: " + data_Cadastro);
+        //Log.i("localizacao", "data_atual" + data_atual.toString());
+
+        return data_Cadastro;
+    }
+
+
+    // Enviar informações para o banco de dados
+    private void registrar() {
+        final ProgressDialog loading = ProgressDialog.show(this, "Por favor espere...", "Atualizando dados...", false, false);
+        String REGISTER_URL = "http://tilocationmobile.atspace.cc/insert.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        loading.dismiss();
+                        Log.i("localizacao","Cadastrado com sucesso");
+                        //Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        loading.dismiss();
+                        Log.i("localizacao","Erro para inserir no banco");
+                        //Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("imei", IMEINumber);
+                params.put("longitude", longitude);
+                params.put("latitude", latitude);
+                params.put("dataCadastro", data_Cadastro);
+                Log.i("localizacao","Todos os dados");
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    // TODO Fechar aplicativo e iniciar servicos background
+    // Menu de configurações ou tela principal
+    //startService(new Intent(LocationActivity.this,Servico.class));
+
 
 }

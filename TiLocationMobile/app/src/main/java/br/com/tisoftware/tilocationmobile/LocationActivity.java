@@ -50,14 +50,14 @@ public class LocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_location);
 
         // coordenadas
-        t = (TextView) findViewById(R.id.textView);
+        //t = (TextView) findViewById(R.id.textView);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                t.append("\n " + location.getLongitude() + " " + location.getLatitude());
+                //t.append("\n " + location.getLongitude() + " " + location.getLatitude());
                 longitude = String.valueOf(location.getLongitude());
                 latitude = String.valueOf(location.getLatitude());
                 Log.i("localizacao", "Exibindo na tela");
@@ -84,11 +84,12 @@ public class LocationActivity extends AppCompatActivity {
             }
         };
 
-        // Verifica se o GPS está ativado
-        verificaGPS();
-
+        // TODO Verificar, porque não está pegando o IMEI antes das permissões
         // Chama método para pegar IMEI
         imei();
+
+        // Verifica se o GPS está ativado
+        verificaGPS();
 
     }
 
@@ -174,15 +175,16 @@ public class LocationActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         loading.dismiss();
-
-                        Toast.makeText(getApplicationContext(), "cadastrado com sucesso", Toast.LENGTH_LONG).show();
+                        Log.i("localizacao","cadastrado com sucesso");
+                        //Toast.makeText(getApplicationContext(), "cadastrado com sucesso", Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         loading.dismiss();
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        Log.i("localizacao","Erro para inserir no banco");
+                        //Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
                     }
                 }){
             @Override
@@ -192,7 +194,7 @@ public class LocationActivity extends AppCompatActivity {
                 params.put("longitude", longitude);
                 params.put("latitude", latitude);
                 params.put("dataCadastro", data_Cadastro);
-                Log.i("localizacao","Dados gravados");
+                Log.i("localizacao","Todos os dados");
                 return params;
             }
         };

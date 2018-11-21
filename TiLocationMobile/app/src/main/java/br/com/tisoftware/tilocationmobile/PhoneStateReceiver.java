@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import br.com.tisoftware.tilocationmobile.db.DatabaseManager;
+
 public class PhoneStateReceiver extends BroadcastReceiver {
 
     static final String TAG="State";
