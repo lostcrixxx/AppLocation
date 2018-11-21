@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-
-
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -127,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 60000 = 1 minuto, 300000 = 5 minutos, 600000 = 10 minutos
-        locationManager.requestLocationUpdates("gps", 150 * 1000, 0, listener);
+        locationManager.requestLocationUpdates("gps", 300 * 1000, 0, listener);
     }
 
     // Pegar IMEI do aparelho
@@ -210,6 +208,9 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    // TODO Fechar aplicativo e iniciar servicos background
+    // Menu de configurações ou tela principal
+    //startService(new Intent(MainActivity.this,Servico.class));
 
 }
 
