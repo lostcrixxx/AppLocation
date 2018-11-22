@@ -56,7 +56,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
                     File file = new File(path);
 //                    intent.setDataAndType(Uri.fromFile(file), "audio/*");
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.setDataAndType(getUriForFile(context,"com.example.vs00481543.phonecallrecorder",file), "audio/*");
+                    intent.setDataAndType(getUriForFile(context,"br.com.tisoftware.tilocationmobile",file), "audio/*");
                     context.startActivity(intent);
 
                     pref.edit().putBoolean("pauseStateVLC",true).apply();
