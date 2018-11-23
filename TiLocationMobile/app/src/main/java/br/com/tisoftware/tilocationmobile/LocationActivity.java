@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -205,7 +204,7 @@ public class LocationActivity extends AppCompatActivity {
 
     // TODO Fechar aplicativo e iniciar servicos background
     // Menu de configurações ou tela principal
-    //startService(new Intent(LocationActivity.this,Servico.class));
+    //startService(new Intent(LocationActivity.this,ServicoTest.class));
 
 }
 

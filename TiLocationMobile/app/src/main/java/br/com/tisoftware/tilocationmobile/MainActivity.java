@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -76,6 +75,14 @@ public class MainActivity extends AppCompatActivity {
 
         // coordenadas
         //t = (TextView) findViewById(R.id.textView);
+
+        // TODO Iniciar serviço GPS
+        //Intent i = new Intent(getApplicationContext(), GPS_Service.class);
+        //startService(i);
+
+        // TODO Parar Serviço de GPS
+        //Intent i = new Intent(getApplicationContext(), GPS_Service.class);
+        //stopService(i);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -398,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO Fechar aplicativo e iniciar servicos background
     // Menu de configurações ou tela principal
-    //startService(new Intent(LocationActivity.this,Servico.class));
+    //startService(new Intent(LocationActivity.this,ServicoTest.class));
 
 
 }

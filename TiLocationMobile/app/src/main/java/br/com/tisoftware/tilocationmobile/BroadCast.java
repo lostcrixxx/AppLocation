@@ -10,7 +10,7 @@ public class BroadCast extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
             if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
-                Intent pushIntent = new Intent(context, Servico.class);
+                Intent pushIntent = new Intent(context, ServicoTest.class);
                 context.startService(pushIntent);
             }
 

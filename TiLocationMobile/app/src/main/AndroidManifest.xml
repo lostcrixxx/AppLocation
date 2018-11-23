@@ -43,13 +43,14 @@
         <receiver android:name=".PhoneStateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
             </intent-filter>
 
 
         </receiver>
 
         <service android:name=".RecorderService"/>
+        <service android:name=".GPS_Service"/>
 
         <provider
             android:authorities="br.com.tisoftware.tilocationmobile"
