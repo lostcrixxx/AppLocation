@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
     List<CallDetails> callDetailsList;
     boolean checkResume=false;
 
+    boolean status = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,45 +86,52 @@ public class MainActivity extends AppCompatActivity {
         //Intent i = new Intent(getApplicationContext(), GPS_Service.class);
         //stopService(i);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        listener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                //t.append("\n " + location.getLongitude() + " " + location.getLatitude());
-                longitude = String.valueOf(location.getLongitude());
-                latitude = String.valueOf(location.getLatitude());
-                Log.i("localizacao", "Exibindo na tela");
-                imei();
-                registrar(); // Enviar os dados para o banco
-                Log.i("localizacao", "Chamou para registrar no banco");
-                olhaData();
-            }
+        // TODO Pergunta 3vez
 
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
+            // Primeiro chama as permissões
+            checkPermission();
 
-            }
+             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-            @Override
-            public void onProviderEnabled(String s) {
+             listener = new LocationListener() {
+                 @Override
+                 public void onLocationChanged(Location location) {
+                     //t.append("\n " + location.getLongitude() + " " + location.getLatitude());
+                     longitude = String.valueOf(location.getLongitude());
+                     latitude = String.valueOf(location.getLatitude());
+                     Log.i("localizacao", "Exibindo na tela");
+                     imei();
+                     registrar(); // Enviar os dados para o banco
+                     Log.i("localizacao", "Chamou para registrar no banco");
+                     olhaData();
+                 }
 
-            }
+                 @Override
+                 public void onStatusChanged(String s, int i, Bundle bundle) {
 
-            @Override
-            public void onProviderDisabled(String s) {
+                 }
 
-                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(i);
-            }
-        };
+                 @Override
+                 public void onProviderEnabled(String s) {
 
-        // Verifica se o GPS está ativado
-        verificaGPS();
+                 }
 
-        // TODO Verificar, porque não está pegando o IMEI antes das permissões
-        // Chama método para pegar IMEI
-        //imei();
+                 @Override
+                 public void onProviderDisabled(String s) {
+
+                     Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                     startActivity(i);
+                 }
+             };
+
+             // Verifica se o GPS está ativado
+             verificaGPS();
+
+
+             // TODO Verificar, porque não está pegando o IMEI antes das permissões
+             // Chama método para pegar IMEI
+             //imei();
 
 
         /*StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -137,12 +146,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }*/
 
-        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
-        pref.edit().putInt("numOfCalls",0).apply();
+             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+             pref.edit().putInt("numOfCalls", 0).apply();
 
-       // pref.edit().putInt("serialNumData", 1).apply();
+             // pref.edit().putInt("serialNumData", 1).apply();
 
-        //rAdapter.notifyDataSetChanged();
+             //rAdapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -150,12 +160,14 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.e("Check", "onResume: ");
         if(checkPermission()) {
-            Log.i(TAG, "Está com todas as permissões");
+            // Log.i(TAG, "Verificado novamente. Está com todas as permissões");
             //Toast.makeText(getApplicationContext(), "Permission already granted", Toast.LENGTH_LONG).show();
             if(checkResume==false) {
-                setUi();
+                checkResume = true;
+                //setUi();
                 // this.callDetailsList=new DatabaseManager(this).getAllDetails();
-                rAdapter.notifyDataSetChanged();
+                //rAdapter.notifyDataSetChanged();
+
             }
         }
     }
@@ -237,8 +249,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // TODO Verificar a quantidade de permissoes
+        // Verificar a quantidade de permissoes
         if(i==8) {
+
 
             return true;
         }
@@ -256,11 +269,12 @@ public class MainActivity extends AppCompatActivity {
         listReq=perm.toArray(listReq);
         for(String permissions:listReq) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,permissions)) {
-                Toast.makeText(getApplicationContext(), "Phone Permissions needed for " + permissions, Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "Telefone precisa de permissão: " + permissions, Toast.LENGTH_LONG);
             }
         }
 
         ActivityCompat.requestPermissions(MainActivity.this, listReq, 1);
+        //ActivityCompat.requestPermissions(MainActivity.this, listReq, 10);
 
 
         return false;
@@ -274,16 +288,17 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
 
-
-                    Log.i(TAG, "Tem permissão de acesso nas chamadas");
-                    //Toast.makeText(getApplicationContext(),"Permission Granted to access Phone calls",Toast.LENGTH_LONG);
+                status = true;
+                Log.i(TAG, "Tem permissão de acesso nas chamadas");
+                //Toast.makeText(getApplicationContext(),"Permission Granted to access Phone calls",Toast.LENGTH_LONG);
                 }
                 else
-                Log.i(TAG, "Não pode acessar as chamadas");
-                    //Toast.makeText(getApplicationContext(),"You can't access Phone calls",Toast.LENGTH_LONG);
+                //Log.i(TAG, "Não pode acessar as chamadas");
+
+                //Toast.makeText(getApplicationContext(),"You can't access Phone calls",Toast.LENGTH_LONG);
                 break;
             case 10:
-                imei();
+                //imei();
                 verificaGPS();
                 break;
             default:
@@ -310,16 +325,29 @@ public class MainActivity extends AppCompatActivity {
 
     void verificaGPS() {
         // first check for permissions
+
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}
                         , 10);
-            }
+           }
             return;
         }
 
-        // 60000 = 1 minuto, 300000 = 5 minutos, 600000 = 10 minutos
-        locationManager.requestLocationUpdates("gps", 60000, 0, listener);
+
+        //if(checkPermission()){
+        //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        //        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}
+        //                , 10);
+        //    }
+
+
+            // 60000 = 1 minuto, 300000 = 5 minutos, 600000 = 10 minutos
+            locationManager.requestLocationUpdates("gps", 300 * 1000, 0, listener);
+        //}
+
+
     }
 
     // Pegar IMEI do aparelho
@@ -368,13 +396,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Enviar informações para o banco de dados
     private void registrar() {
-        final ProgressDialog loading = ProgressDialog.show(this, "Por favor espere...", "Atualizando dados...", false, false);
+        //final ProgressDialog loading = ProgressDialog.show(this, "Por favor espere...", "Atualizando dados...", false, false);
         String REGISTER_URL = "http://tilocationmobile.atspace.cc/insert.php";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        loading.dismiss();
+                        //loading.dismiss();
                         Log.i("localizacao","Cadastrado com sucesso");
                         //Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
                     }
@@ -382,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loading.dismiss();
+                        //loading.dismiss();
                         Log.i("localizacao","Erro para inserir no banco");
                         //Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
                     }
