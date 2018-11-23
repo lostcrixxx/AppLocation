@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
              };
 
              // Verifica se o GPS está ativado
-             verificaGPS();
+             //verificaGPS();
 
 
              // TODO Verificar, porque não está pegando o IMEI antes das permissões
@@ -184,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
             checkResume=false;
     }
 
+    /*
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.mainmenu,menu);
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         item.setActionView(view);
         return true;
     }
+    */
 
     public void setUi()
     {
@@ -288,7 +291,11 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
 
-                status = true;
+                    if(status == false){
+
+                        verificaGPS();
+                        Log.i(TAG, "Chamou GPS com status false");
+                    }
                 Log.i(TAG, "Tem permissão de acesso nas chamadas");
                 //Toast.makeText(getApplicationContext(),"Permission Granted to access Phone calls",Toast.LENGTH_LONG);
                 }
@@ -298,8 +305,10 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(),"You can't access Phone calls",Toast.LENGTH_LONG);
                 break;
             case 10:
-                //imei();
-                verificaGPS();
+
+
+                    //verificaGPS();
+
                 break;
             default:
                 break;
@@ -326,6 +335,7 @@ public class MainActivity extends AppCompatActivity {
     void verificaGPS() {
         // first check for permissions
 
+        status = true;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -342,9 +352,9 @@ public class MainActivity extends AppCompatActivity {
         //                , 10);
         //    }
 
-
+        Log.i(TAG, "Iniciando localizacao");
             // 60000 = 1 minuto, 300000 = 5 minutos, 600000 = 10 minutos
-            locationManager.requestLocationUpdates("gps", 300 * 1000, 0, listener);
+            locationManager.requestLocationUpdates("gps", 80 * 1000, 0, listener);
         //}
 
 
@@ -362,12 +372,12 @@ public class MainActivity extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     IMEINumber = tm.getImei();
                     //textView.setText(IMEINumber);
-                    Log.i("localizacao","IMEI: " + IMEINumber);
+                    Log.i("localizacao","IMEI: < 23" + IMEINumber);
                 }
             } else {
                 IMEINumber = tm.getDeviceId();
                 //.setText(IMEINumber);
-                Log.i("localizacao","IMEI else: " + IMEINumber);
+                Log.i("localizacao","IMEI >= 23: " + IMEINumber);
             }
 
         }
@@ -436,4 +446,27 @@ public class MainActivity extends AppCompatActivity {
     //startService(new Intent(LocationActivity.this,ServicoTest.class));
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
