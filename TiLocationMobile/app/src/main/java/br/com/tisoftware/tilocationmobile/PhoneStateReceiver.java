@@ -35,7 +35,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 Bundle extras = intent.getExtras();
                 String state = extras.getString(TelephonyManager.EXTRA_STATE);
                 Log.d(TAG, " onReceive: " + state);
-                Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Call detected(Incoming/Outgoing) " + state, Toast.LENGTH_SHORT).show();
 
                 if (extras != null) {
                     if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
