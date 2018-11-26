@@ -40,19 +40,24 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".PhoneStateReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-
-            </intent-filter>
-
-
-        </receiver>
-
         <!-- Gravação das ligações -->
         <service android:name=".RecorderService"/>
         <!-- Localização -->
         <service android:name=".GPS_Service"/>
+
+        <!-- Iniciar GPS após religar -->
+        <receiver android:name="br.com.tisoftware.tilocationmobile.BootReciever">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Gravação -->
+        <receiver android:name="br.com.tisoftware.tilocationmobile.PhoneStateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:authorities="br.com.tisoftware.tilocationmobile"

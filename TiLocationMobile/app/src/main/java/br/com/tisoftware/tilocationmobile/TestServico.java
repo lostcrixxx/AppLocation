@@ -6,7 +6,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-public class ServicoTest extends Service{
+public class TestServico extends Service{
 
     @Override
     public IBinder onBind(Intent arg0) {
