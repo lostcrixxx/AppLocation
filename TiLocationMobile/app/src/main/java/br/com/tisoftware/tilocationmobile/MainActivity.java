@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         checkPermission();
 
         if(checkPermission()) {
-            
+
             Log.i(TAG, "Passou da validação");
 
 
