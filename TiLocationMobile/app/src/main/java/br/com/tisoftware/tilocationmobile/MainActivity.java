@@ -52,31 +52,43 @@ import br.com.tisoftware.tilocationmobile.db.DatabaseManager;
 public class MainActivity extends AppCompatActivity {
 
     DatabaseHandler db=new DatabaseHandler(this);
-    final static String TAG = "localizacao";
     RecordAdapter rAdapter;
     RecyclerView recycler;
     List<CallDetails> callDetailsList;
     boolean checkResume=false;
 
-    boolean status = false;
+    final int reqcode = 1;
+
+    // Log do aplicativo
+    final static String TAG = "localizacao";
+
+    //
+    static boolean statusGPS = false;
+
+    // Para carregar histórico de ligações na tela
+    //boolean status = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-            // TODO Pergunta 3vez
+        checkPermission();
+
+        if(checkPermission()) {
+            
+            Log.i(TAG, "Passou da validação");
+
+
+        } else {
             checkPermission();
+        }
 
-             // TODO Chama método para pegar IMEI
-             //imei();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref.edit().putInt("numOfCalls", 0).apply();
 
-             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-             pref.edit().putInt("numOfCalls", 0).apply();
-
-             // pref.edit().putInt("serialNumData", 1).apply();
-             //rAdapter.notifyDataSetChanged();
-
+        // pref.edit().putInt("serialNumData", 1).apply();
+        //rAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -143,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         for(String permis:perm) {
             int resultPhone = ContextCompat.checkSelfPermission(MainActivity.this,permis);
             if(resultPhone== PackageManager.PERMISSION_GRANTED)
-                i++;
+                i++; // Soma as permissoes aceitas
             else {
                 reqPerm.add(permis);
             }
@@ -151,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Verificar a quantidade de permissoes
         if(i==8) {
-
 
             return true;
         }
@@ -184,15 +195,17 @@ public class MainActivity extends AppCompatActivity {
         switch(requestCode)
         {
             case 1:
-                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+                if(grantResults.length>0 && grantResults[5]==PackageManager.PERMISSION_GRANTED) {
+                statusGPS = true;
+                    // TODO validar todas as permissoes
+                    Log.i(TAG, "Tem permissão de acesso nas chamadas");
+                    if(statusGPS == true){
 
-                    if(status == false){
-
-                        Log.i(TAG, "Chamou GPS");
+                        Log.i(TAG, "Chamou GPS Service");
                         Intent i = new Intent(getApplicationContext(), GPS_Service.class);
                         startService(i);
                     }
-                Log.i(TAG, "Tem permissão de acesso nas chamadas");
+
                 //Toast.makeText(getApplicationContext(),"Permission Granted to access Phone calls",Toast.LENGTH_LONG);
                 }
                 else

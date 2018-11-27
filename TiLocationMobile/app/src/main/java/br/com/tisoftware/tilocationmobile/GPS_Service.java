@@ -17,7 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -33,6 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static br.com.tisoftware.tilocationmobile.MainActivity.TAG;
+
 public class GPS_Service extends Service {
 
     // Coordenadas
@@ -41,7 +42,6 @@ public class GPS_Service extends Service {
     // TODO salvar IMEI em SharedPreferences
     // IMEI
     private String IMEINumber = "";
-    final int reqcode = 1;
 
     private LocationListener listener;
     private LocationManager locationManager;
@@ -55,6 +55,8 @@ public class GPS_Service extends Service {
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate() {
+
+
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -63,7 +65,7 @@ public class GPS_Service extends Service {
                 latitude = String.valueOf(location.getLatitude());
                 longitude = String.valueOf(location.getLongitude());
                 sendBroadcast(i);
-                Log.i("localizacao", "Long: " + location.getLongitude()+ "  Lat: "+location.getLatitude());
+                Log.i(TAG, "Long: " + location.getLongitude()+ "  Lat: "+location.getLatitude());
                 imei();
                 olhaData();
                 registrar();
@@ -76,11 +78,12 @@ public class GPS_Service extends Service {
 
             @Override
             public void onProviderEnabled(String s) {
-
+                Log.i(TAG, "GPS está ativado");
             }
 
             @Override
             public void onProviderDisabled(String s) {
+                Log.i(TAG, "GPS está desativado");
                 Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -90,7 +93,7 @@ public class GPS_Service extends Service {
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         // 300000 = 5 minutos
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 80000, 0, listener);
 
     }
 
@@ -115,12 +118,12 @@ public class GPS_Service extends Service {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     IMEINumber = tm.getImei();
                     //textView.setText(IMEINumber);
-                    Log.i("localizacao","IMEI: < 23" + IMEINumber);
+                    Log.i(TAG,"IMEI: < 23" + IMEINumber);
                 }
             } else {
                 IMEINumber = tm.getDeviceId();
                 //.setText(IMEINumber);
-                Log.i("localizacao","IMEI >= 23: " + IMEINumber);
+                Log.i(TAG,"IMEI >= 23: " + IMEINumber);
             }
 
         //}
@@ -140,7 +143,7 @@ public class GPS_Service extends Service {
 
         data_Cadastro = dateFormat.format(data_atual);
 
-        Log.i("localizacao", "data_atual: " + data_Cadastro);
+        Log.i(TAG, "data_atual: " + data_Cadastro);
         //Log.i("localizacao", "data_atual" + data_atual.toString());
 
         return data_Cadastro;
@@ -156,7 +159,7 @@ public class GPS_Service extends Service {
                     @Override
                     public void onResponse(String response) {
                         //loading.dismiss();
-                        Log.i("localizacao","Cadastrado com sucesso");
+                        Log.i(TAG, "Cadastrado com sucesso");
                         //Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
                     }
                 },
@@ -164,7 +167,7 @@ public class GPS_Service extends Service {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //loading.dismiss();
-                        Log.i("localizacao","Erro para inserir no banco");
+                        Log.i(TAG,"Erro para inserir no banco");
                         //Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
                     }
                 }){
@@ -175,7 +178,7 @@ public class GPS_Service extends Service {
                 params.put("longitude", longitude);
                 params.put("latitude", latitude);
                 params.put("dataCadastro", data_Cadastro);
-                Log.i("localizacao","Pegou todos os dados");
+                Log.i(TAG,"Pegou todos os dados");
                 return params;
             }
         };
