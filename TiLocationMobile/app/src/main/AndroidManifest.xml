@@ -19,6 +19,7 @@
 
     <!-- Ligações -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" /> -->
 
     <!-- Iniciar serviço automaticamente -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>

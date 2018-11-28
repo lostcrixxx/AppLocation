@@ -93,7 +93,7 @@ public class GPS_Service extends Service {
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         // 300000 = 5 minutos
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 80000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 0, listener);
 
     }
 

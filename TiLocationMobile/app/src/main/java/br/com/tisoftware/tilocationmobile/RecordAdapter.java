@@ -49,6 +49,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
 
                     //Toast.makeText(context, "Clicked on " + number, Toast.LENGTH_SHORT).show();
 
+                    //getExternalStorageDirectory() - Disponivel na API 21
                     String path = Environment.getExternalStorageDirectory() + "/My Records/" + dates + "/" + number + "_" + times + ".mp4"  ;
                     Log.d("path", "onClick: "+path);
 //                    Uri uri = Uri.parse(path);
