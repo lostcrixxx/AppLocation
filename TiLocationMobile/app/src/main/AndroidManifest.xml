@@ -41,10 +41,11 @@
             </intent-filter>
         </activity>
 
-        <!-- Gravação das ligações -->
-        <service android:name=".RecorderService"/>
+
         <!-- Localização -->
         <service android:name=".GPS_Service"/>
+        <!-- Novo Gravação de ligações -->
+        <service android:name=".RecordingService"/>
 
         <!-- Iniciar GPS após religar -->
         <receiver android:name="br.com.tisoftware.tilocationmobile.BootReciever">
@@ -53,8 +54,10 @@
             </intent-filter>
         </receiver>
 
-        <!-- Gravação -->
-        <receiver android:name="br.com.tisoftware.tilocationmobile.PhoneStateReceiver">
+        <!-- Gravação Completa
+
+        <service android:name=".RecorderService"/>
+        <receiver android:name="br.com.tisoftware.tilocationmobile.call.PhoneStateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
@@ -70,6 +73,7 @@
                 android:resource="@xml/provider_paths"/>
 
         </provider>
+        -->
 
     </application>
 

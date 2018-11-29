@@ -1,51 +1,28 @@
 package br.com.tisoftware.tilocationmobile;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import br.com.tisoftware.tilocationmobile.call.CallDetails;
+import br.com.tisoftware.tilocationmobile.call.RecordAdapter;
 import br.com.tisoftware.tilocationmobile.db.DatabaseHandler;
 import br.com.tisoftware.tilocationmobile.db.DatabaseManager;
 
@@ -78,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
         if(checkPermission()) {
 
             Log.i(TAG, "Passou da validação");
+
+            Log.i(TAG, "Chamou GPS Service");
+            Intent g = new Intent(getApplicationContext(), GPS_Service.class);
+            startService(g);
+
+
+            Log.i(TAG, "Chamou Recording Service");
+            Intent r = new Intent(getApplicationContext(), RecordingService.class);
+            startService(r);
 
 
         } else {
@@ -206,7 +192,9 @@ public class MainActivity extends AppCompatActivity {
                         startService(i);
                     }
 
-                //Toast.makeText(getApplicationContext(),"Permission Granted to access Phone calls",Toast.LENGTH_LONG);
+                    Log.i(TAG, "Chamou Recording Service");
+                    Intent i = new Intent(getApplicationContext(), RecordingService.class);
+                    startService(i);
                 }
                 else
                     // TODO LOOP para solicitar as permissoes

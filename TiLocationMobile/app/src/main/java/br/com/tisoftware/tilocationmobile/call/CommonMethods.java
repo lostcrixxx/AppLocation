@@ -1,4 +1,4 @@
-package br.com.tisoftware.tilocationmobile;
+package br.com.tisoftware.tilocationmobile.call;
 
 import android.content.Context;
 import android.database.Cursor;

@@ -9,10 +9,17 @@ public class BootReciever extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-            if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
-                Intent pushIntent = new Intent(context, GPS_Service.class);
-                context.startService(pushIntent);
-            }
+        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+            Intent pushIntent = new Intent(context, GPS_Service.class);
+            context.startService(pushIntent);
+
+        }
+
+        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+            Intent pushIntent = new Intent(context, RecordingService.class);
+            context.startService(pushIntent);
+
+        }
 
     }
 }
