@@ -40,11 +40,10 @@ public class RecordingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         File file = new File(path);
         Log.i(TAG, "Inicio do Serviço de gravação");
-        //return super.onStartCommand(intent, flags, startId);
         //file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
-        //file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
+
         Date date = new Date();
-        CharSequence sdf = DateFormat.format("dd-MM-yy-hh-mm-ss",date.getTime()); // Grava data e hora
+        CharSequence sdf = DateFormat.format("dd-MM-yy-hh-mm-ss",date.getTime()); // Pega data e hora
         rec = new MediaRecorder();
 
         // Áudio de ligação
@@ -55,7 +54,7 @@ public class RecordingService extends Service {
         rec.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         // Saída
-        rec.setOutputFile(file.getAbsolutePath()+ "/" + sdf+".3gp");
+        rec.setOutputFile(file.getAbsolutePath()+ "/" + sdf+".3gp"); // Slava nome do arquivo com data e hora
 
         // Serviço de telefone
         TelephonyManager manager = (TelephonyManager) getApplicationContext().getSystemService(getApplicationContext().TELEPHONY_SERVICE);
