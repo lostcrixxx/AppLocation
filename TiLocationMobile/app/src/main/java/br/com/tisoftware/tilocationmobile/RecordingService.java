@@ -24,10 +24,14 @@ public class RecordingService extends Service {
     // Classe para gravar áudio ou vídeo
     private MediaRecorder rec;
     private boolean recordstarted;
+    private boolean status = false;
     // Converte caminho para abstrato
     //private File file;
     // Caminho de uma pasta
     String path = "sdcard/alarms/";
+
+
+
 
     @Nullable
     @Override
@@ -39,7 +43,7 @@ public class RecordingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         File file = new File(path);
-        Log.i(TAG, "Inicio do Serviço de gravação");
+        Log.i(TAG, "Chamou Serviço de gravação");
         //file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
 
         Date date = new Date();
@@ -54,7 +58,7 @@ public class RecordingService extends Service {
         rec.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         // Saída
-        rec.setOutputFile(file.getAbsolutePath()+ "/" + sdf+".3gp"); // Slava nome do arquivo com data e hora
+        rec.setOutputFile(file.getAbsolutePath()+ "/" + sdf+".3gp"); // Salva nome do arquivo com data e hora
 
         // Serviço de telefone
         TelephonyManager manager = (TelephonyManager) getApplicationContext().getSystemService(getApplicationContext().TELEPHONY_SERVICE);
@@ -62,31 +66,59 @@ public class RecordingService extends Service {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
                 //super.onCallStateChanged(state, incomingNumber){
-                    // Alteração na ligação e não ter áudio
-                    if(TelephonyManager.CALL_STATE_IDLE == state && rec == null){ // Estado da chamada do dispositivo: sem atividade.
+                // Alteração na ligação e não ter áudio
+                //if(status) {
+                    if (TelephonyManager.CALL_STATE_IDLE == state && rec != null && status) { // Estado da chamada do dispositivo: sem atividade.
                         Log.i(TAG, "sem atividade de ligações");
                         rec.stop();
                         rec.reset();
                         rec.release();
                         recordstarted = false;
-                        stopSelf();
+                        status = false;
+                        //stopSelf();
 
-                    } else if(TelephonyManager.CALL_STATE_OFFHOOK == state){ // Estado da chamada do dispositivo: Fora do gancho.
-                        Log.i(TAG, "ligação");
+                    } else if (TelephonyManager.CALL_STATE_OFFHOOK == state) { // Estado da chamada do dispositivo: Fora do gancho.
+
                         try {
                             rec.prepare();
+
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            rec.release();
+                            //e.printStackTrace();
                         }
                         rec.start();
-                        recordstarted= true;
-                    }
+                        Log.i(TAG, "Gravação efetuada");
+                        recordstarted = true;
+                        status = true;
 
-                }
+                    }
+                    /*
+                    else if(TelephonyManager.CALL_STATE_RINGING == state){ // Ligação recebida
+                        try {
+                            rec.prepare();
+
+                        } catch (IOException e) {
+                            rec.release();
+                            //e.printStackTrace();
+                        }
+                        rec.start();
+                        Log.i(TAG, "Gravação recebida");
+                        recordstarted = true;
+                        status = true;
+                    }
+                    */
+
+                //}
+            }
+
 
         }, PhoneStateListener.LISTEN_CALL_STATE);
 
 
         return START_STICKY;
+
     }
+
+
+
 }
