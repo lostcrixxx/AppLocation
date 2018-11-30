@@ -1,4 +1,4 @@
-package br.com.tisoftware.tilocationmobile;
+package br.com.tisoftware.tilocationmobile.call;
 
 import android.support.v4.content.FileProvider;
 
