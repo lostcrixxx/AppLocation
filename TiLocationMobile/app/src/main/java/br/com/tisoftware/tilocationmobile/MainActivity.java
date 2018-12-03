@@ -54,16 +54,16 @@ public class MainActivity extends AppCompatActivity {
 
         if(checkPermission()) {
 
-            Log.i(TAG, "Passou da validação");
+            Log.i(TAG, "Passou na validação");
 
             Log.i(TAG, "Chamou GPS Service");
             Intent g = new Intent(getApplicationContext(), GPS_Service.class);
             startService(g);
 
 
-            Log.i(TAG, "Chamou Recording Service");
-            Intent r = new Intent(getApplicationContext(), RecordingService.class);
-            startService(r);
+            //Log.i(TAG, "Chamou Recording Service");
+            //Intent r = new Intent(getApplicationContext(), RecordingService.class);
+            //startService(r);
 
 
         } else {
@@ -192,9 +192,9 @@ public class MainActivity extends AppCompatActivity {
                         startService(i);
                     }
 
-                    Log.i(TAG, "Chamou Recording Service");
-                    Intent i = new Intent(getApplicationContext(), RecordingService.class);
-                    startService(i);
+                    //Log.i(TAG, "Chamou Recording Service");
+                    //Intent i = new Intent(getApplicationContext(), RecordingService.class);
+                    //startService(i);
                 }
                 else
                     // TODO LOOP para solicitar as permissoes

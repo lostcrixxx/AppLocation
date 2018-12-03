@@ -19,6 +19,7 @@
 
     <!-- Ligações -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <!-- <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" /> -->
 
     <!-- Iniciar serviço automaticamente -->
@@ -41,7 +42,6 @@
             </intent-filter>
         </activity>
 
-
         <!-- Localização -->
         <service android:name=".GPS_Service"/>
         <!-- Novo Gravação de ligações -->
@@ -54,29 +54,35 @@
             </intent-filter>
         </receiver>
 
-        <!-- Gravação Completa
-
-        <service android:name=".RecorderService"/>
-        <receiver android:name="br.com.tisoftware.tilocationmobile.call.PhoneStateReceiver">
+        <!-- Iniciar Ligação após religar -->
+        <receiver android:name="br.com.tisoftware.tilocationmobile.RecordReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
-            </intent-filter>
-        </receiver>
+        <!--<action android:name="android.intent.action.NEW_OUTGOING_CALL" />-->
+    </intent-filter>
+</receiver>
 
-        <provider
-            android:authorities="br.com.tisoftware.tilocationmobile"
-            android:name="android.support.v4.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+<!-- Gravação Completa
 
-        </provider>
-        -->
+<service android:name=".RecorderService"/>
+<receiver android:name="br.com.tisoftware.tilocationmobile.call.PhoneStateReceiver">
+    <intent-filter>
+        <action android:name="android.intent.action.PHONE_STATE" />
+    </intent-filter>
+</receiver>
+
+<provider
+    android:authorities="br.com.tisoftware.tilocationmobile"
+    android:name="android.support.v4.content.FileProvider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/provider_paths"/>
+
+</provider>
+-->
 
     </application>
-
-
 
 </manifest>
