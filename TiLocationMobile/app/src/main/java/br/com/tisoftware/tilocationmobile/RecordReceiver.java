@@ -3,37 +3,64 @@ package br.com.tisoftware.tilocationmobile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NfcAdapter;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import static br.com.tisoftware.tilocationmobile.MainActivity.TAG;
 
 public class RecordReceiver extends BroadcastReceiver {
+
+    static Boolean recordStarted;
+
     @Override
     public void onReceive(Context context, Intent intent) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+
+        try {
+
+//           boolean callWait=pref.getBoolean("recordStarted",false);
+            Bundle extras = intent.getExtras();
+            String state = extras.getString(TelephonyManager.EXTRA_STATE);
 
 
-        final String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-        if (TelephonyManager.EXTRA_STATE_RINGING.equals(state)) { // Incoming call
+            if (extras != null) {
+                if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
-            Log.i(TAG,"Ligação: Recebendo");
-            Intent pushIntent = new Intent(context, RecordingService.class);
-            context.startService(pushIntent);
+                } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
-        } else  if (TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)) { // Outgoing call
+                    Log.d(TAG, "Ligação");
 
-            Log.i(TAG,"Ligação: Ligando");
-            Intent pushIntent = new Intent(context, RecordingService.class);
-            context.startService(pushIntent);
+                    Intent reivToServ = new Intent(context, RecordingService.class);
 
-        } else  if (TelephonyManager.EXTRA_STATE_IDLE.equals(state)) { // Call ended
-            Log.i(TAG,"Ligação: Desligou");
+                    context.startService(reivToServ);
+                    Log.i(TAG, "Chamou Serviço de gravação");
 
+                    recordStarted=true;
+
+                    pref.edit().putBoolean("recordStarted", true).apply();
+                }
+
+            } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+
+                Log.d(TAG, "Ligação finalizada ");
+                recordStarted = pref.getBoolean("recordStarted", false);
+
+                //if (recordStarted && l == 0) {
+                if (recordStarted) {
+                Log.d(TAG, " Inside to stop recorder " + state);
+
+                context.stopService(new Intent(context, RecordingService.class));
+
+                pref.edit().putBoolean("recordStarted", false).apply();
+                }
 
         }
 
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
