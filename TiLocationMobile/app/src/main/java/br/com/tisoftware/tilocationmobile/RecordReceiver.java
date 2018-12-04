@@ -19,7 +19,7 @@ public class RecordReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        //try {
+        try {
 
 //           boolean callWait=pref.getBoolean("recordStarted",false);
             Bundle extras = intent.getExtras();
@@ -38,29 +38,29 @@ public class RecordReceiver extends BroadcastReceiver {
                     context.startService(reivToServ);
 
 
-                    recordStarted=true;
+                    recordStarted = true;
 
                     pref.edit().putBoolean("recordStarted", true).apply();
+                } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+
+                    Log.d(TAG, "Ligação finalizada ");
+                    recordStarted = pref.getBoolean("recordStarted", false);
+
+                    //if (recordStarted && l == 0) {
+                    if (recordStarted) {
+
+                        context.stopService(new Intent(context, RecordingService.class));
+
+                        pref.edit().putBoolean("recordStarted", false).apply();
+                    }
+
                 }
 
-            } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            }
+            
+            } catch(Exception e){
+                e.printStackTrace();
+            }
 
-                Log.d(TAG, "Ligação finalizada ");
-                recordStarted = pref.getBoolean("recordStarted", false);
-
-                //if (recordStarted && l == 0) {
-                if (recordStarted) {
-                Log.d(TAG, " Inside to stop recorder " + state);
-
-                context.stopService(new Intent(context, RecordingService.class));
-
-                pref.edit().putBoolean("recordStarted", false).apply();
-                }
-
-        //}
-
-        //} catch (Exception e) {
-        //    e.printStackTrace();
-        }
     }
 }

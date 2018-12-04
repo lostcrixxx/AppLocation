@@ -26,7 +26,6 @@ public class DatabaseManager {
         ContentValues values = new ContentValues();
         values.put(DatabaseHandler.SERIAL_NUMBER, callDetails.getSerial());
         values.put(DatabaseHandler.PHONE_NUMBER, callDetails.getNum());
-       // values.put(DatabaseHandler.CONTACT_NAME,callDetails.getName());
         values.put(DatabaseHandler.TIME, callDetails.getTime1());
         values.put(DatabaseHandler.DATE, callDetails.getDate1());
 
@@ -45,7 +44,6 @@ public class DatabaseManager {
                 CallDetails callDetails = new CallDetails();
                 callDetails.setSerial(cursor.getInt(0));
                 callDetails.setNum(cursor.getString(1));
-               // callDetails.setName(cursor.getString(2));
                 callDetails.setTime1(cursor.getString(2));
                 callDetails.setDate1(cursor.getString(3));
 
