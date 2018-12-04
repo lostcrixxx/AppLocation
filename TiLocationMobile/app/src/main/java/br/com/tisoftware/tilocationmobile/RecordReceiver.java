@@ -13,13 +13,13 @@ import static br.com.tisoftware.tilocationmobile.MainActivity.TAG;
 
 public class RecordReceiver extends BroadcastReceiver {
 
-    static Boolean recordStarted;
+    static Boolean recordStarted = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        try {
+        //try {
 
 //           boolean callWait=pref.getBoolean("recordStarted",false);
             Bundle extras = intent.getExtras();
@@ -36,7 +36,7 @@ public class RecordReceiver extends BroadcastReceiver {
                     Intent reivToServ = new Intent(context, RecordingService.class);
 
                     context.startService(reivToServ);
-                    Log.i(TAG, "Chamou Serviço de gravação");
+
 
                     recordStarted=true;
 
@@ -57,10 +57,10 @@ public class RecordReceiver extends BroadcastReceiver {
                 pref.edit().putBoolean("recordStarted", false).apply();
                 }
 
-        }
+        //}
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        //} catch (Exception e) {
+        //    e.printStackTrace();
         }
     }
 }

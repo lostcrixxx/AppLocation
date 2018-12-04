@@ -36,37 +36,58 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Log.i(TAG, "Chamou Serviço de gravação");
+
         File file = new File(path);
 
         //file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
 
         Date date = new Date();
         CharSequence sdf = DateFormat.format("dd-MM-yy-hh-mm-ss",date.getTime()); // Pega data e hora
-        rec = new MediaRecorder();
-        rec.reset();
 
-        // Áudio de ligação
-        //rec.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
 
-        rec.setAudioSource(MediaRecorder.AudioSource.MIC);
-        rec.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-        rec.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        if(rec != null) {
 
-        // Saída
-        rec.setOutputFile(file.getAbsolutePath()+ "/" + sdf+".3gp"); // Salva nome do arquivo com data e hora
+            onDestroy();
+        }
 
-            try {
-                rec.prepare();
+        if(rec == null) {
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            rec = new MediaRecorder();
+
+            // Áudio de ligação
+            //rec.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
+
+            rec.setAudioSource(MediaRecorder.AudioSource.MIC);
+            rec.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+            rec.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+            // Saída
+            rec.setOutputFile(file.getAbsolutePath() + "/" + sdf + ".3gp"); // Salva nome do arquivo com data e hora
+
+            if(!status) {
+
+                try {
+                    rec.prepare();
+                    status = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.i(TAG, "Erro no start" + e.toString());
+                }
+                rec.start();
+                Log.i(TAG, "Gravação efetuada");
+
+            } else {
+                Log.i(TAG, "Erro na gravação");
             }
-            rec.start();
-            Log.i(TAG, "Gravação efetuada");
 
 
+        } else {
+            Log.i(TAG, "MediaRecorder não foi limpo");
+            onDestroy();
+        }
         return START_NOT_STICKY;
-
 
     }
 
@@ -78,9 +99,10 @@ public class RecordingService extends Service {
         rec.stop();
         rec.reset();
         rec.release();
-        rec=null;
+        rec = null;
+        status = false;
 
-        Log.d(TAG, "onDestroy: "+"Gravação finalizada");
+        Log.i(TAG, "MediaRecorder limpo");
 
     }
 
