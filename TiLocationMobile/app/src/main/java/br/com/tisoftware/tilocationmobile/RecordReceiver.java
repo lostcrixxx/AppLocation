@@ -57,7 +57,7 @@ public class RecordReceiver extends BroadcastReceiver {
                 }
 
             }
-            
+
             } catch(Exception e){
                 e.printStackTrace();
             }
