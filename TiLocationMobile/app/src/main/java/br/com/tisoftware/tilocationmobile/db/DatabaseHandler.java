@@ -6,12 +6,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "callRecords";
     public static final String TABLE_RECORD = "callRecord";
     public static final String SERIAL_NUMBER= "serialNumber";
     public static final String PHONE_NUMBER ="phoneNumber";
-   // public static final String CONTACT_NAME="contactName";
     public static final String TIME = "time";
     public static final String DATE = "date";
 
