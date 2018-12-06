@@ -54,143 +54,12 @@
           downloadUrl('resultado.php', function(data) {
             var xml = data.responseXML;
             var markers = xml.documentElement.getElementsByTagName('marker');
-            Array.prototype.forEach.call(markers, function(markerElem) {
+            // TODO transformar em Json
             
-            // Titulo do local
-              var name = markerElem.getAttribute('name');
-              // Endereço conforme sua localização
-              var address = markerElem.getAttribute('address');
-              // Tipo de Point
-              var type = markerElem.getAttribute('type');
-              // Point
-              var point = new google.maps.LatLng(
-                  parseFloat(markerElem.getAttribute('lat')),
-                  parseFloat(markerElem.getAttribute('lng')));
-                  
-              var infowincontent = document.createElement('div');
-              var strong = document.createElement('strong');
-              strong.textContent = name
-              infowincontent.appendChild(strong);
-              infowincontent.appendChild(document.createElement('br'));
-
-              var text = document.createElement('text');
-              text.textContent = address
-              infowincontent.appendChild(text);
-              var icon = customLabel[type] || {};
-              
-
-         
-            // Adicionando Point
-              var marker = new google.maps.Marker({
-                map: map,
-                position: point,
-                label: icon.label
-              });
-              
-              bounds.extend(marker.position);
-              
-              // Exibe informações ao clicar no Point
-              // marker.addListener('click', function() {
-              //  infoWindow.setContent(infowincontent);
-              //  infoWindow.open(map, marker);
-              // });
-              
-              
-              map.fitBounds(bounds);
-              
-             
-    
-            });
-            
-           /*
-           
-           // Adicionar PolyLine
-           var flightPlanCoordinates = [
-                   {lat: -23.40888125, lng: -46.75347317},
-                   {lat: -23.40644984, lng: -46.75463795}
-            ];
-
-
-          var flightPath = new google.maps.Polyline({
-           path: flightPlanCoordinates,
-           geodesic: true,
-           strokeColor: '#FF0000',
-           strokeOpacity: 1.0,
-           strokeWeight: 2
-           
-         });
-         flightPath.setMap(map);       
-         
-         */
-    
-         }); // FIM consulta XML
-         
-
-
-        
-        } // FIM initMap
-
-
-      function downloadUrl(url, callback) {
-        var request = window.ActiveXObject ?
-            new ActiveXObject('Microsoft.XMLHTTP') :
-            new XMLHttpRequest;
-
-        request.onreadystatechange = function() {
-          if (request.readyState == 4) {
-            request.onreadystatechange = doNothing;
-            callback(request, request.status);
-          }
-        };
-
-        request.open('GET', url, true);
-        request.send(null);
-      }
-
-      function doNothing() {}
-    
-    /*
-    
-      function initMap() {
-
-        /// Traçar rota
-        //var service = new google.maps.DirectionsService;
-        
-        var map = new google.maps.Map(document.getElementById('map'), {
-        // Tipo de Mapa
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-          //center: new google.maps.LatLng(-23.5489, -46.638823),
-          //zoom: 11
-        });
-        
-        // Retorna os limites lat / lng para dar o zoom 
-        var bounds = new google.maps.LatLngBounds();
-        
-        var infoWindow = new google.maps.InfoWindow;
-     
-          // Retornar todos os valores do arquivo XML, gerado pala página PHP
-             downloadUrl('resultado.php', function(data) {
-            var xml = data.responseXML;
-            var markers = xml.documentElement.getElementsByTagName('marker');
-
-            Array.prototype.forEach.call(markers, function(markerElem) {
-            
-            // Titulo do local
-              var name = markerElem.getAttribute('name');
-              // Endereço conforme sua localização
-              var address = markerElem.getAttribute('address');
-              // Tipo de Point
-              var type = markerElem.getAttribute('type');
-              // Point
-              var response = new google.maps.LatLng(
-                  parseFloat(markerElem.getAttribute('lat')),
-                  parseFloat(markerElem.getAttribute('lng')));
-                  
-  var directionsService = new google.maps.DirectionsService;
-  var directionsDisplay = new google.maps.DirectionsRenderer({
-    suppressInfoWindows: true,
-    suppressMarkers: true
-  });
+            var directionsDisplay = new google.maps.DirectionsRenderer({
+            suppressInfoWindows: true,
+            suppressMarkers: true
+          });
 
 
   var response = {
@@ -288,6 +157,12 @@
   }
 
 
+         }); // FIM consulta XML
+         
+
+
+        
+        } // FIM initMap
 
 function createMapMarker(map, latlng, label, html, sign) {
   var marker = new google.maps.Marker({
@@ -302,6 +177,90 @@ function createMapMarker(map, latlng, label, html, sign) {
 
   return marker;
 }
+
+
+        
+            /*
+            Array.prototype.forEach.call(markers, function(markerElem) {
+            
+            // Titulo do local
+              var name = markerElem.getAttribute('name');
+              // Endereço conforme sua localização
+              var address = markerElem.getAttribute('address');
+              // Tipo de Point
+              var type = markerElem.getAttribute('type');
+              // Point
+              var point = new google.maps.LatLng(
+                  parseFloat(markerElem.getAttribute('lat')),
+                  parseFloat(markerElem.getAttribute('lng')));
+                  
+              //var infowincontent = document.createElement('div');
+              //var strong = document.createElement('strong');
+              //strong.textContent = name
+              //infowincontent.appendChild(strong);
+              //infowincontent.appendChild(document.createElement('br'));
+
+             // var text = document.createElement('text');
+              //text.textContent = address
+              //infowincontent.appendChild(text);
+    //          var icon = customLabel[type] || {};
+              
+
+         
+            // Adicionando Point
+   //           var marker = new google.maps.Marker({
+   //             map: map,
+   //             position: point,
+   //             label: icon.label
+   //           });
+              
+   //           bounds.extend(marker.position);
+              
+              // Exibe informações ao clicar no Point
+              // marker.addListener('click', function() {
+              //  infoWindow.setContent(infowincontent);
+              //  infoWindow.open(map, marker);
+              // });
+              
+              
+   //           map.fitBounds(bounds);
+              
+             
+    
+   //         });
+            
+                
+
+         
+    
+         }); // FIM consulta XML
+         
+
+
+        
+        } // FIM initMap
+
+*/
+
+      function downloadUrl(url, callback) {
+        var request = window.ActiveXObject ?
+            new ActiveXObject('Microsoft.XMLHTTP') :
+            new XMLHttpRequest;
+
+        request.onreadystatechange = function() {
+          if (request.readyState == 4) {
+            request.onreadystatechange = doNothing;
+            callback(request, request.status);
+          }
+        };
+
+        request.open('GET', url, true);
+        request.send(null);
+      }
+
+      function doNothing() {}
+    
+  
       /*
 
 function initMap() {
@@ -438,9 +397,8 @@ function createMapMarker(map, latlng, label, html, sign) {
       //function doNothing() {}
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDH0elODdv85HtYSH6Xai2Npc9qHCWIEuQ&callback=initMap">
-    // GoogleMaps AIzaSyA0T4F8wuvZCxoFf6ztyOoyAaKCnauDr8E
-    // API Directions AIzaSyDH0elODdv85HtYSH6Xai2Npc9qHCWIEuQ
+    src="https://maps.googleapis.com/maps/api/js?key=MINHA_KEY&callback=initMap">
+
     </script>
   </body>
 </html>
